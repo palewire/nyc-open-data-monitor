@@ -61,17 +61,30 @@ def parse_row(row: dict) -> dict:
             "scrape_date": row["scrape_date"],
             "id": row["resource"]["id"],
             "name": row["resource"]["name"],
-            "description": row["resource"]["description"],
-            "attribution": row["resource"]["attribution"],
-            "attribution_link": row["resource"]["attribution_link"],
             "type": row["resource"]["type"],
-            "updatedAt": pd.to_datetime(row["resource"]["updatedAt"]),
-            "createdAt": pd.to_datetime(row["resource"]["createdAt"]),
+            "update_date": pd.to_datetime(row["resource"]["updatedAt"]),
+            "creation_date": pd.to_datetime(row["resource"]["createdAt"]),
             "publication_date": pd.to_datetime(row["resource"]["publication_date"]),
-            "permalink": row["permalink"],
             "creator": row["creator"]["display_name"],
+            "permalink": row["permalink"],
+            "description": clean_description(row["resource"]["description"]),
         }
     )
+
+
+def clean_description(value: str) -> str | None:
+    """Clean the description field."""
+    if value is None:
+        return None
+    value = value.strip()
+    if value == "":
+        return None
+    # Replace newlines with spaces
+    value = value.replace("\n", " ")
+    # Replace two or more spaces with one space
+    value = " ".join(value.split())
+    # Return the result
+    return value
 
 
 if __name__ == "__main__":
