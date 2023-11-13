@@ -28,6 +28,7 @@ myst-parser = "*"
 tomli = "*"
 types-retry = "*"
 types-pytz = "*"
+types-python-dateutil = "*"
 
 [packages]
 exceptiongroup = "*"

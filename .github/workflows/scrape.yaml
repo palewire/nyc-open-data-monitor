@@ -35,6 +35,10 @@ jobs:
         run: pipenv run python -m src.download
         shell: bash
 
+      - name: Run transform command
+        run: pipenv run python -m src.transform
+        shell: bash
+
       - name: Datestamp
         run: date > data/timestamp.txt
         shell: bash

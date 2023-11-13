@@ -54,3 +54,4 @@ repos:
           - types-requests
           - types-pytz
           - types-retry
+          - types-python-dateutil
