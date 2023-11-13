@@ -34,8 +34,10 @@ def download(verbose: bool) -> None:
     data = get_url(verbose=verbose)
 
     # Write them out
-    utils.write_json(data, data_dir / f"{now}.json")
-    utils.write_json(data, data_dir / "latest.json")
+    if verbose:
+        print(f"Writing to [bold]{data_dir}[/bold]")
+    utils.write_json(data["results"], data_dir / f"{now.isoformat()}.json")
+    utils.write_json(data["results"], data_dir / "latest.json")
 
 
 @retry()
@@ -55,7 +57,7 @@ def get_url(
         "order": order,
     }
     if verbose:
-        print(f"Downloading [bold]{url}[/bold]...")
+        print(f"Downloading [bold]{url}[/bold]")
     response = requests.get(url, params=params)
     response.raise_for_status()
     data = response.json()

@@ -37,6 +37,7 @@ retry = "*"
 pandas = "*"
 rich = "*"
 "mastodon.py" = "*"
+fastparquet = "*"
 
 [requires]
 python_version = "3.11"
