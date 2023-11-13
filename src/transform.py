@@ -36,8 +36,6 @@ def transform(verbose: bool) -> None:
     master_df = pd.concat(df_list).apply(parse_row, axis=1)
 
     # Count by day
-    if verbose:
-        print("Count by day")
     count_by_day = master_df.groupby("scrape_date").size()
     count_by_day.name = "n"
     count_by_day.to_csv(utils.DATA_DIR / "clean" / "observations.csv", header=True)
@@ -48,14 +46,17 @@ def transform(verbose: bool) -> None:
     )
 
     # Type counts
-    if verbose:
-        print("Type counts")
     type_counts = latest_df.groupby("type").size()
     type_counts.name = "n"
     type_counts.to_csv(utils.DATA_DIR / "clean" / "type_counts.csv", header=True)
 
+    # Creator counts
+    creator_counts = latest_df.groupby("creator").size()
+    creator_counts.name = "n"
+    creator_counts.to_csv(utils.DATA_DIR / "clean" / "creator_counts.csv", header=True)
+
     # Write it out as csv
-    out_path = utils.DATA_DIR / "clean" / "latest.csv"
+    out_path = utils.DATA_DIR / "clean" / "microdata.csv"
     if verbose:
         print(f"Writing {len(latest_df)} records to [bold]{out_path}[/bold]")
     latest_df.to_csv(out_path, index=False)
