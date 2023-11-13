@@ -47,6 +47,13 @@ def transform(verbose: bool) -> None:
         subset=["id"], keep="first"
     )
 
+    # Type counts
+    if verbose:
+        print("Type counts")
+    type_counts = latest_df.groupby("type").size()
+    type_counts.name = "n"
+    type_counts.to_csv(utils.DATA_DIR / "clean" / "type_counts.csv", header=True)
+
     # Write it out as csv
     out_path = utils.DATA_DIR / "clean" / "latest.csv"
     if verbose:
