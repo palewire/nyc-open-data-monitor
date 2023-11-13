@@ -1,6 +1,7 @@
-"""Test the example module."""
+"""Test the module."""
+from src.download import get_url
 
 
-def test_example(tmpdir):
-    """Test some simple math."""
-    assert 2 + 2 == 4
+def test_get_url():
+    """Test the get_url method."""
+    get_url()

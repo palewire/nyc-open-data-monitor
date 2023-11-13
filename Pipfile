@@ -26,9 +26,17 @@ sphinxcontrib-napoleon = "*"
 sphinxcontrib-mermaid = "*"
 myst-parser = "*"
 tomli = "*"
+types-retry = "*"
+types-pytz = "*"
 
 [packages]
 exceptiongroup = "*"
+click = "*"
+requests = "*"
+retry = "*"
+pandas = "*"
+rich = "*"
+"mastodon.py" = "*"
 
 [requires]
 python_version = "3.11"
