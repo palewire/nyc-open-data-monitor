@@ -1,3 +1,1 @@
-A template for open-source Python software repositories
-
-Instructions for how to get started working with the code can be found in `CONTRIBUTING.md`.
+Automated monitoring of new and updated datasets posted to New York City's data portal
