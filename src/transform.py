@@ -4,6 +4,7 @@ from __future__ import annotations
 import click
 import pandas as pd
 from rich import print
+from rich.progress import track
 
 from . import utils
 
@@ -23,7 +24,7 @@ def transform(verbose: bool) -> None:
 
     # Read them in as a dataframe
     df_list = []
-    for f in file_list:
+    for f in track(file_list, description="Reading files"):
         df = pd.read_json(f, compression="gzip")
         # Set the the filename as a column
         df["filename"] = f.stem.replace(".json", "")
@@ -35,10 +36,11 @@ def transform(verbose: bool) -> None:
     # Combine them all
     master_df = pd.concat(df_list).apply(parse_row, axis=1)
 
-    # Count by day
+    # Count by scrape
     count_by_day = master_df.groupby("scrape_date").size()
     count_by_day.name = "n"
-    count_by_day.to_csv(utils.DATA_DIR / "clean" / "observations.csv", header=True)
+    clean_dir = utils.DATA_DIR / "clean"
+    count_by_day.to_csv(clean_dir / "observations.csv", header=True)
 
     # Drop duplicates
     latest_df = master_df.sort_values("scrape_date").drop_duplicates(
@@ -48,15 +50,42 @@ def transform(verbose: bool) -> None:
     # Type counts
     type_counts = latest_df.groupby("type").size()
     type_counts.name = "n"
-    type_counts.to_csv(utils.DATA_DIR / "clean" / "type_counts.csv", header=True)
+    type_counts.to_csv(clean_dir / "type_counts.csv", header=True)
 
     # Creator counts
     creator_counts = latest_df.groupby("creator").size()
     creator_counts.name = "n"
-    creator_counts.to_csv(utils.DATA_DIR / "clean" / "creator_counts.csv", header=True)
+    creator_counts.to_csv(clean_dir / "creator_counts.csv", header=True)
 
-    # Write it out as csv
-    out_path = utils.DATA_DIR / "clean" / "microdata.csv"
+    # Monthly totals of new records
+    monthly_totals = latest_df.groupby(
+        pd.Grouper(key="creation_date", freq="M")
+    ).size()
+    monthly_totals.name = "n"
+    monthly_totals.to_csv(
+        clean_dir / "creations_by_month.csv", header=True, index=True
+    )
+
+    # Calculate how many days since the last update to each dataset
+    # Use the maximum scrape date for comparison.
+    latest_scrape_date = latest_df["scrape_date"].max()
+    latest_df["days_since_update"] = (
+        latest_scrape_date - latest_df["update_date"]
+    ).dt.days
+
+    # Aggregate the distribution of days since update
+    days_since_update = (
+        latest_df.groupby("days_since_update").size().reset_index(name="n")
+    )
+    days_since_update.to_csv(
+        clean_dir / "days_since_update.csv", header=True, index=False
+    )
+
+    # Drop that column
+    latest_df = latest_df.drop(columns=["days_since_update"])
+
+    # Write out the microdata as csv
+    out_path = clean_dir / "microdata.csv"
     if verbose:
         print(f"Writing {len(latest_df)} records to [bold]{out_path}[/bold]")
     latest_df.to_csv(out_path, index=False)
@@ -72,7 +101,6 @@ def parse_row(row: dict) -> dict:
             "type": row["resource"]["type"],
             "update_date": pd.to_datetime(row["resource"]["updatedAt"]),
             "creation_date": pd.to_datetime(row["resource"]["createdAt"]),
-            "publication_date": pd.to_datetime(row["resource"]["publication_date"]),
             "creator": row["creator"]["display_name"],
             "permalink": row["permalink"],
             "description": clean_description(row["resource"]["description"]),
