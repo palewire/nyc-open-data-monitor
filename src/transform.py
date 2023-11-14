@@ -57,14 +57,15 @@ def transform(verbose: bool) -> None:
     creator_counts.name = "n"
     creator_counts.to_csv(clean_dir / "creator_counts.csv", header=True)
 
+    # Category counts
+    category_counts = latest_df.groupby("category").size()
+    category_counts.name = "n"
+    category_counts.to_csv(clean_dir / "category_counts.csv", header=True)
+
     # Monthly totals of new records
-    monthly_totals = latest_df.groupby(
-        pd.Grouper(key="creation_date", freq="M")
-    ).size()
+    monthly_totals = latest_df.groupby(pd.Grouper(key="creation_date", freq="M")).size()
     monthly_totals.name = "n"
-    monthly_totals.to_csv(
-        clean_dir / "creations_by_month.csv", header=True, index=True
-    )
+    monthly_totals.to_csv(clean_dir / "creations_by_month.csv", header=True, index=True)
 
     # Calculate how many days since the last update to each dataset
     # Use the maximum scrape date for comparison.
@@ -97,15 +98,32 @@ def parse_row(row: dict) -> dict:
         {
             "scrape_date": row["scrape_date"],
             "id": row["resource"]["id"],
-            "name": row["resource"]["name"],
-            "type": row["resource"]["type"],
+            "name": safestr(row["resource"]["name"]),
+            "type": safestr(row["resource"]["type"]),
             "update_date": pd.to_datetime(row["resource"]["updatedAt"]),
             "creation_date": pd.to_datetime(row["resource"]["createdAt"]),
-            "creator": row["creator"]["display_name"],
+            "creator": safestr(row["creator"]["display_name"]),
             "permalink": row["permalink"],
+            "category": safestr(row["classification"].get("domain_category")),
             "description": clean_description(row["resource"]["description"]),
         }
     )
+
+
+def safestr(value: str | None) -> str | None:
+    """Return a string representation of a value."""
+    # If the value is None, return None
+    if not value or not value.strip():
+        return None
+
+    # Strip leading and trailing whitespace
+    value = value.strip()
+
+    # Replace multiple whitespaces with a single space
+    value = " ".join(value.split())
+
+    # Return the result
+    return value
 
 
 def clean_description(value: str) -> str | None:
