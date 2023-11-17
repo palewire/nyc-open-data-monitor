@@ -3,9 +3,7 @@ from __future__ import annotations
 
 import click
 import pandas as pd
-from feedgen.entry import FeedEntry
 from feedgen.feed import FeedGenerator
-
 
 from . import utils
 
@@ -24,11 +22,7 @@ def rss(verbose: bool) -> None:
     # Get the latest data
     df = pd.read_csv(
         clean_dir / "microdata.csv",
-        parse_dates=[
-            "scrape_date",
-            "creation_date",
-            "update_date"
-        ]
+        parse_dates=["scrape_date", "creation_date", "update_date"],
     )
 
     # Sort by created date and list the 20 most recent
@@ -47,17 +41,16 @@ def rss(verbose: bool) -> None:
     for item in item_list:
         entry = feed.add_entry(order="append")
         entry.id(item["id"])
-        entry.title(item['name'])
-        entry.link(href=item['permalink'])
-        entry.description(item['description'])
-        entry.pubDate(item['creation_date'])
-        entry.contributor(name=item['creator'])
-        if item['category']:
-            entry.category(term=item['category'])
+        entry.title(item["name"])
+        entry.link(href=item["permalink"])
+        entry.description(item["description"])
+        entry.pubDate(item["creation_date"])
+        entry.contributor(name=item["creator"])
+        if item["category"]:
+            entry.category(term=item["category"])
 
     # Write the feed
     feed.rss_file(clean_dir / "latest-created.rss")
-
 
 
 if __name__ == "__main__":
