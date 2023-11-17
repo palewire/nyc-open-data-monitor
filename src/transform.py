@@ -85,8 +85,26 @@ def transform(verbose: bool) -> None:
     # Drop that column
     latest_df = latest_df.drop(columns=["days_since_update"])
 
-    # Write out the microdata as csv
+    # Get the previous scraped data
     out_path = clean_dir / "microdata.csv"
+    prev_df = pd.read_csv(out_path)
+
+    # Identify new records
+    latest_ids = set(latest_df["id"])
+    prev_ids = set(prev_df["id"])
+    new_ids = latest_ids - prev_ids
+    print(f"Found [bold]{len(new_ids)}[/bold] new records")
+
+    # Write out the new records
+    new_df = latest_df[latest_df["id"].isin(new_ids)]
+    new_path = clean_dir / "new.csv"
+    if verbose:
+        print(
+            f"Writing [bold]{len(new_df)}[/bold] new records to [bold]{new_path}[/bold]"
+        )
+    new_df.to_csv(new_path, index=False)
+
+    # Write out the full dataset
     if verbose:
         print(f"Writing {len(latest_df)} records to [bold]{out_path}[/bold]")
     latest_df.to_csv(out_path, index=False)
