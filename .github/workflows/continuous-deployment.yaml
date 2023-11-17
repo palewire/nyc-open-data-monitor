@@ -99,3 +99,23 @@ jobs:
         name: Run tests
         run: pipenv run pytest --cov -sv
         shell: bash
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: scrape
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: data/clean
+
+      - id: deployment
+        name: Deploy data to GitHub Pages
+        uses: actions/deploy-pages@v2
