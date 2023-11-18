@@ -39,6 +39,14 @@ jobs:
         run: pipenv run python -m src.transform
         shell: bash
 
+      - name: Run rss command
+        run: pipenv run python -m src.rss
+        shell: bash
+
+      - name: Run Mastodon command
+        run: pipenv run python -m src.toot
+        shell: bash
+
       - name: Datestamp
         run: date > data/timestamp.txt
         shell: bash
