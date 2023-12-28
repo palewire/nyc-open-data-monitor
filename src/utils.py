@@ -6,10 +6,78 @@ import subprocess
 from pathlib import Path
 
 from dateutil.parser import parse as dateparse
+import pandas as pd
 from rich import print
 
 THIS_DIR = Path(__file__).parent.absolute()
 DATA_DIR = THIS_DIR.parent / "data"
+
+
+def get_latest_download() -> pd.DataFrame:
+    """Read in the latest download."""
+    # Get the latest file
+    latest_file = get_sorted_file_list()[0]
+
+    # Read it in
+    df = pd.read_json(latest_file, compression="gzip")
+
+    # Set the the filename as a column
+    df["filename"] = latest_file.stem.replace(".json", "")
+
+    # Parse the filename as a date
+    df["scrape_date"] = pd.to_datetime(df["filename"])
+
+    # Return the result
+    return df.apply(parse_row, axis=1)
+
+
+def parse_row(row: dict) -> dict:
+    """Parse a row of raw data and return only what we will keep for analysis."""
+    return pd.Series(
+        {
+            "scrape_date": row["scrape_date"],
+            "id": row["resource"]["id"],
+            "name": safestr(row["resource"]["name"]),
+            "type": safestr(row["resource"]["type"]),
+            "update_date": pd.to_datetime(row["resource"]["updatedAt"]),
+            "creation_date": pd.to_datetime(row["resource"]["createdAt"]),
+            "creator": safestr(row["creator"]["display_name"]),
+            "permalink": row["permalink"],
+            "category": safestr(row["classification"].get("domain_category")),
+            "description": clean_description(row["resource"]["description"]),
+        }
+    )
+
+
+def safestr(value: str | None) -> str | None:
+    """Return a string representation of a value."""
+    # If the value is None, return None
+    if not value or not value.strip():
+        return None
+
+    # Strip leading and trailing whitespace
+    value = value.strip()
+
+    # Replace multiple whitespaces with a single space
+    value = " ".join(value.split())
+
+    # Return the result
+    return value
+
+
+def clean_description(value: str) -> str | None:
+    """Clean the description field."""
+    if value is None:
+        return None
+    value = value.strip()
+    if value == "":
+        return None
+    # Replace newlines with spaces
+    value = value.replace("\n", " ")
+    # Replace two or more spaces with one space
+    value = " ".join(value.split())
+    # Return the result
+    return value
 
 
 def write_json(data: list[dict], path: Path, indent: int = 2):

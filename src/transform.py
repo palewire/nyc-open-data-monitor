@@ -36,7 +36,7 @@ def transform(verbose: bool) -> None:
     # Combine them all
     if verbose:
         print(f"Concatenating {len(df_list)} dataframes")
-    master_df = pd.concat(df_list).apply(parse_row, axis=1)
+    master_df = pd.concat(df_list).apply(utils.parse_row, axis=1)
 
     # Count by scrape
     count_by_day = master_df.groupby("scrape_date").size()
@@ -107,13 +107,14 @@ def transform(verbose: bool) -> None:
     new_df.to_csv(new_path, index=False)
 
     # Identify past datasets that didn't appear in the latest scrape
-    deleted_df = latest_df[latest_df.scrape_date < latest_scrape_date]
+    latest_download = utils.get_latest_download()
+    deleted_df = latest_df[~latest_df["id"].isin(latest_download["id"])]
     if verbose:
         print(
             f"Found [bold]{len(deleted_df)}[/bold] past records that do not appear in the latest scrape"
         )
 
-    # Append to the deleted records file
+    # Write to the deleted records file
     deleted_path = clean_dir / "deleted.csv"
     if verbose:
         print(
@@ -125,55 +126,6 @@ def transform(verbose: bool) -> None:
     if verbose:
         print(f"Writing {len(latest_df)} records to [bold]{out_path}[/bold]")
     latest_df.to_csv(out_path, index=False)
-
-
-def parse_row(row: dict) -> dict:
-    """Parse a row of data and return only what we will keep for analysis."""
-    return pd.Series(
-        {
-            "scrape_date": row["scrape_date"],
-            "id": row["resource"]["id"],
-            "name": safestr(row["resource"]["name"]),
-            "type": safestr(row["resource"]["type"]),
-            "update_date": pd.to_datetime(row["resource"]["updatedAt"]),
-            "creation_date": pd.to_datetime(row["resource"]["createdAt"]),
-            "creator": safestr(row["creator"]["display_name"]),
-            "permalink": row["permalink"],
-            "category": safestr(row["classification"].get("domain_category")),
-            "description": clean_description(row["resource"]["description"]),
-        }
-    )
-
-
-def safestr(value: str | None) -> str | None:
-    """Return a string representation of a value."""
-    # If the value is None, return None
-    if not value or not value.strip():
-        return None
-
-    # Strip leading and trailing whitespace
-    value = value.strip()
-
-    # Replace multiple whitespaces with a single space
-    value = " ".join(value.split())
-
-    # Return the result
-    return value
-
-
-def clean_description(value: str) -> str | None:
-    """Clean the description field."""
-    if value is None:
-        return None
-    value = value.strip()
-    if value == "":
-        return None
-    # Replace newlines with spaces
-    value = value.replace("\n", " ")
-    # Replace two or more spaces with one space
-    value = " ".join(value.split())
-    # Return the result
-    return value
 
 
 if __name__ == "__main__":
