@@ -34,6 +34,8 @@ def transform(verbose: bool) -> None:
         df_list.append(df)
 
     # Combine them all
+    if verbose:
+        print(f"Concatenating {len(df_list)} dataframes")
     master_df = pd.concat(df_list).apply(parse_row, axis=1)
 
     # Count by scrape
@@ -104,22 +106,19 @@ def transform(verbose: bool) -> None:
         )
     new_df.to_csv(new_path, index=False)
 
-    # Identify deleted records
-    deleted_ids = prev_ids - latest_ids
-    print(f"Found [bold]{len(deleted_ids)}[/bold] deleted records")
+    # Identify past datasets that didn't appear in the latest scrape
+    deleted_df = latest_df[latest_df.scrape_date < latest_scrape_date]
+    if verbose:
+        print(
+            f"Found [bold]{len(deleted_df)}[/bold] past records that do not appear in the latest scrape"
+        )
 
     # Append to the deleted records file
-    deleted_df = prev_df[prev_df["id"].isin(deleted_ids)]
     deleted_path = clean_dir / "deleted.csv"
     if verbose:
         print(
             f"Writing [bold]{len(deleted_df)}[/bold] deleted records to [bold]{deleted_path}[/bold]"
         )
-    deleted_df.to_csv(deleted_path, index=False, mode="a", header=False)
-
-    # Deduplicate the deleted file
-    deleted_df = pd.read_csv(deleted_path)
-    deleted_df = deleted_df.drop_duplicates(subset=["id"], keep="first")
     deleted_df.to_csv(deleted_path, index=False)
 
     # Write out the full dataset
