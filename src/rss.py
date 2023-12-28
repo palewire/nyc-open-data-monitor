@@ -14,7 +14,7 @@ from . import utils
     "--verbose",
     "-v",
     is_flag=True,
-    default=True,
+    default=False,
     help="Print verbose output.",
 )
 def rss(verbose: bool) -> None:
