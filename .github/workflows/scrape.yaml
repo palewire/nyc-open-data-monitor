@@ -32,15 +32,15 @@ jobs:
         shell: bash
 
       - name: Run scrape command
-        run: pipenv run python -m src.download
+        run: pipenv run python -m src.download --verbose
         shell: bash
 
       - name: Run transform command
-        run: pipenv run python -m src.transform
+        run: pipenv run python -m src.transform --verbose
         shell: bash
 
       - name: Run rss command
-        run: pipenv run python -m src.rss
+        run: pipenv run python -m src.rss --verbose
         shell: bash
 
       - name: Run Mastodon command
