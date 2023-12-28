@@ -12,6 +12,8 @@ jobs:
   lint-python:
     name: Lint Python code
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [lint-python, mypy-python, test-python]
     steps:
       - id: checkout
         name: Checkout
