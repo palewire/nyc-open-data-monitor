@@ -12,8 +12,6 @@ jobs:
   lint-python:
     name: Lint Python code
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    needs: [lint-python, mypy-python, test-python]
     steps:
       - id: checkout
         name: Checkout
@@ -105,6 +103,8 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [lint-python, mypy-python, test-python]
     permissions:
       pages: write
       id-token: write
