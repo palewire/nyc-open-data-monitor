@@ -57,7 +57,7 @@ def rss(verbose: bool) -> None:
         entry.description(item["description"])
         entry.pubDate(item["creation_date"])
         entry.contributor(name=item["creator"])
-        if item["category"]:
+        if item["category"] and not pd.isnull(item["category"]):
             entry.category(term=item["category"])
 
     # Write the feed
