@@ -1,1 +1,3 @@
 scrape_date,id,name,type,update_date,creation_date,creator,permalink,category,description
+2024-01-10 19:14:39.513912-05:00,7f4s-uwi7,Off-Year and Special Elections Public Matching Fund Payments,dataset,2024-01-10 20:01:38+00:00,2023-12-27 20:09:43+00:00,NYC OpenData,https://data.cityofnewyork.us/d/7f4s-uwi7,City Government,This dataset contains public matching funds payments to a campaign during an off-year or special election.
+2024-01-10 19:14:39.513912-05:00,ups9-zwkm,Off-Year and Special Elections Financial Analysis,dataset,2024-01-10 20:01:45+00:00,2023-12-27 19:51:44+00:00,NYC OpenData,https://data.cityofnewyork.us/d/ups9-zwkm,City Government,This dataset contains a financial summary of each campaign during an off-year or special election.
