@@ -1,1 +1,2 @@
 scrape_date,id,name,type,update_date,creation_date,creator,permalink,category,description
+2024-02-01 19:13:47.741878-05:00,7ffd-6gs9,Public feedback on 311 request/complaint types,dataset,2024-02-01 20:52:02+00:00,2024-01-30 21:25:25+00:00,NYC OpenData,https://data.cityofnewyork.us/d/7ffd-6gs9,City Government,This dataset contains a listing of comments and requests from the public for the addition of a new or update to an existing NYC 311 service request/complaint type. This data is required to be published under Local Law 97 of 2022.
