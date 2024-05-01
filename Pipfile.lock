@@ -891,11 +891,12 @@
         },
         "flake8-bugbear": {
             "hashes": [
-                "sha256:32b2903e22331ae04885dae25756a32a8c666c85142e933f43512a70f342052a",
-                "sha256:83324bad4d90fee4bf64dd69c61aff94debf8073fbd807c8b6a36eec7a2f0719"
+                "sha256:cb430dd86bc821d79ccc0b030789a9c87a47a369667f12ba06e80f11305e8258",
+                "sha256:ff8d4ba5719019ebf98e754624c30c05cef0dadcf18a65d91c7567300e52a130"
             ],
             "index": "pypi",
-            "version": "==23.12.2"
+            "markers": "python_full_version >= '3.8.1'",
+            "version": "==24.4.26"
         },
         "flake8-docstrings": {
             "hashes": [
